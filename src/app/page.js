@@ -1,103 +1,113 @@
+// ==================== Next.js 基礎知識 ====================
+// 'use client' 指令詳解：
+// 1. Next.js 的組件類型：
+//    - 服務器組件（默認）：在服務器端渲染，不能使用瀏覽器API和React狀態
+//    - 客戶端組件：在瀏覽器端運行，可以使用所有React功能
+// 2. 'use client' 的作用：
+//    - 將組件標記為客戶端組件
+//    - 啟用瀏覽器端功能（如useState、useEffect、DOM操作等）
+//    - 允許處理用戶交互和事件
+'use client';
+
+// ==================== 依賴導入說明 ====================
+// 1. next/image：Next.js的圖片優化組件
+//    - 自動進行圖片優化和壓縮
+//    - 支持響應式圖片
+//    - 提供延遲加載功能
 import Image from "next/image";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+// 2. useState：React的狀態管理Hook
+//    - 用於在函數組件中添加狀態管理
+//    - 返回一個數組：[當前狀態值, 更新狀態的函數]
+//    - 當狀態更新時，組件會重新渲染
+import { useState } from "react";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+// 3. TaskList：自定義組件
+//    - 負責渲染任務列表
+//    - 通過props接收任務數據
+import TaskList from "./components/TaskList";
+
+// ==================== 組件定義 ====================
+// Home組件：應用的主要頁面組件
+// 1. 組件生命週期：
+//    - 組件創建時初始化狀態
+//    - 根據狀態變化重新渲染
+//    - 響應用戶交互更新狀態
+export default function Home() {
+  // ==================== React狀態管理 ====================
+  // 1. 任務列表狀態管理
+  //    const [狀態變量, 狀態更新函數] = useState(初始值);
+  //    - 狀態變量：保存當前值
+  //    - 狀態更新函數：用於修改狀態
+  //    - 初始值：狀態的初始值
+  const [tasks, setTasks] = useState([]);  // 初始化空數組
+
+  // 2. 輸入框狀態管理
+  //    - 這是一個受控組件的例子
+  //    - 輸入框的值由React狀態控制
+  //    - 當用戶輸入時，通過onChange更新狀態
+  const [newTask, setNewTask] = useState('');
+
+  // ==================== 事件處理函數 ====================
+  // addTask函數：處理添加新任務的邏輯
+  // 1. 函數執行流程：
+  //    a) 記錄當前狀態
+  //    b) 創建新的任務列表
+  //    c) 更新狀態
+  //    d) 重置輸入框
+  const addTask = () => {
+    // 2. 狀態追蹤
+    console.log("Before:", tasks);  // 記錄更新前的狀態
+    console.log("New Task:", newTask);  // 記錄新任務內容
+
+    // 3. 數組操作（不可變性原則）
+    //    [...tasks]：展開運算符
+    //    - 創建當前任務列表的副本
+    //    - 確保不直接修改原始狀態
+    //    - React要求狀態更新必須是不可變的
+    const updateTasks = [...tasks, newTask];
+
+    // 4. 狀態更新
+    //    setTasks：觸發React重新渲染
+    //    - React會比較新舊狀態
+    //    - 只更新必要的DOM部分
+    setTasks(updateTasks);
+    console.log("After:", updateTasks);  // 記錄更新後的狀態
+
+    // 5. 清理工作
+    //    - 重置輸入框狀態
+    //    - 提供更好的用戶體驗
+    setNewTask('');
+  };
+
+  // ==================== 組件渲染 ====================
+  // 1. JSX語法：
+  //    - 類似HTML的JavaScript擴展語法
+  //    - 允許在JavaScript中寫UI結構
+  //    - 大括號{}中可以寫JavaScript表達式
+  return (
+    // main 容器，使用 Tailwind CSS 添加內邊距
+    <main className="p-4">
+      {/* 標題 */}
+      <h1 className="text-2xl font-bold">Task Board</h1>
+      {/* 輸入區域容器 */}
+      <div className="flex gap-2 mb-4">
+        {/* 任務輸入框 */}
+        <input
+          className="border p-2 flex-1"
+          placeholder="Enter a task"
+          value={newTask}
+          // 當輸入內容改變時更新 newTask 狀態
+          onChange={(e) => setNewTask(e.target.value)}
+        />
+        {/* 添加任務按鈕 */}
+        <button
+          className="bg-blue-500 text-white  px-4"
+          onClick={addTask}
+        >Add</button>
+      </div>
+      {/* 顯示任務列表組件，傳入任務數組作為 props */}
+      <TaskList tasks={tasks}/>
+    </main>
   );
 }
