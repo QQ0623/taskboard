@@ -12,7 +12,9 @@
 // 2. 可重用性：
 //    - 可在不同父組件中使用
 //    - 通過 props 接收數據，保持靈活性
-export default function TaskList({ tasks }) {
+'use client';
+import Link from "next/link";
+export default function TaskList({ tasks, onDelete }) {
     return (
         // ==================== JSX 結構說明 ====================
         // 1. ul 元素：無序列表
@@ -26,7 +28,7 @@ export default function TaskList({ tasks }) {
                 2. 參數說明：
                    - task：當前任務內容
                    - index：當前索引，用於 key prop */}
-            {tasks.map((task, index) => (
+            {tasks.map((task) => (
                 // ==================== 列表項渲染 ====================
                 // 1. key prop：
                 //    - React 需要 key 來追蹤列表項
@@ -37,13 +39,21 @@ export default function TaskList({ tasks }) {
                 //    - p-2：內邊距 8px (2 * 0.25rem)
                 //    - rounded：圓角邊框 (border-radius: 0.25rem)
                 <li
-                    key={index}
-                    className="border p-2 rounded"
+                    key={task.id}
+                    className="border p-2 rounded flex justify-between items-center"
                 >
                     {/* 3. 內容渲染：
                            - 直接顯示任務文本
                            - 使用 {} 在 JSX 中嵌入 JavaScript 表達式 */}
-                    {task}
+                    <Link href={`/task/${task.id}`}
+                        className="text-blue-600 hover:underline"
+                    >{task.title}</Link>
+                    <button
+                        className = "text-red-500"
+                        onClick={()=> onDelete(task.id) }
+                    >
+                        Delete
+                    </button>
                 </li>
             ))}
         </ul>

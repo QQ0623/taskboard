@@ -14,13 +14,13 @@
 //    - 自動進行圖片優化和壓縮
 //    - 支持響應式圖片
 //    - 提供延遲加載功能
-import Image from "next/image";
+import Link from "next/link";
 
 // 2. useState：React的狀態管理Hook
 //    - 用於在函數組件中添加狀態管理
 //    - 返回一個數組：[當前狀態值, 更新狀態的函數]
 //    - 當狀態更新時，組件會重新渲染
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 
 // 3. TaskList：自定義組件
 //    - 負責渲染任務列表
@@ -48,6 +48,15 @@ export default function Home() {
   //    - 當用戶輸入時，通過onChange更新狀態
   const [newTask, setNewTask] = useState('');
 
+  const [nextId, setNextId] = useState(1);
+
+  useEffect(() => { 
+    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    setTasks(savedTasks);
+    const maxId = savedTasks.reduce((max, task) => Math.max(max, task.id), 0);
+    setNextId(maxId + 1); 
+  } , []);
+
   // ==================== 事件處理函數 ====================
   // addTask函數：處理添加新任務的邏輯
   // 1. 函數執行流程：
@@ -60,12 +69,19 @@ export default function Home() {
     console.log("Before:", tasks);  // 記錄更新前的狀態
     console.log("New Task:", newTask);  // 記錄新任務內容
 
+
+
     // 3. 數組操作（不可變性原則）
     //    [...tasks]：展開運算符
     //    - 創建當前任務列表的副本
     //    - 確保不直接修改原始狀態
     //    - React要求狀態更新必須是不可變的
-    const updateTasks = [...tasks, newTask];
+    const newTaskObj = {
+      id: nextId,
+      title: newTask,
+      description: '',
+    };
+    const updateTasks = [...tasks, newTaskObj];
 
     // 4. 狀態更新
     //    setTasks：觸發React重新渲染
@@ -78,6 +94,15 @@ export default function Home() {
     //    - 重置輸入框狀態
     //    - 提供更好的用戶體驗
     setNewTask('');
+
+    setNextId(nextId + 1);
+    localStorage.setItem('tasks', JSON.stringify(updateTasks));
+  };
+
+  const handleDelete = (index) => {
+    const newTasks = tasks.filter((_, i)=> i !== index);
+    setTasks(newTasks);
+    localStorage.setItem('tasks', JSON.stringify(updateTasks));
   };
 
   // ==================== 組件渲染 ====================
@@ -87,7 +112,7 @@ export default function Home() {
   //    - 大括號{}中可以寫JavaScript表達式
   return (
     // main 容器，使用 Tailwind CSS 添加內邊距
-    <main className="p-4">
+    <main className="p-4 max-w-md mx-auto">
       {/* 標題 */}
       <h1 className="text-2xl font-bold">Task Board</h1>
       {/* 輸入區域容器 */}
@@ -107,7 +132,7 @@ export default function Home() {
         >Add</button>
       </div>
       {/* 顯示任務列表組件，傳入任務數組作為 props */}
-      <TaskList tasks={tasks}/>
+      <TaskList tasks={tasks} onDelete={handleDelete}/>
     </main>
   );
 }
