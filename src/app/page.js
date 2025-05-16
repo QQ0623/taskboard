@@ -47,9 +47,9 @@ export default function Home() {
   //    - 輸入框的值由React狀態控制
   //    - 當用戶輸入時，通過onChange更新狀態
   const [newTask, setNewTask] = useState('');
-
   const [nextId, setNextId] = useState(1);
-
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => { 
     const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
     setTasks(savedTasks);
@@ -99,10 +99,13 @@ export default function Home() {
     localStorage.setItem('tasks', JSON.stringify(updateTasks));
   };
 
-  const handleDelete = (index) => {
-    const newTasks = tasks.filter((_, i)=> i !== index);
-    setTasks(newTasks);
-    localStorage.setItem('tasks', JSON.stringify(updateTasks));
+const handleDelete = (id) => {
+    console.log("Before:", tasks); // 記錄刪除前的任務列表狀態
+    const index = tasks.findIndex((task) => task.id === id); // 根據任務 ID 找到要刪除的任務的索引
+    const updatedTasks = tasks.filter((_, i) => i !== index); // 使用 filter 方法創建一個新的陣列，排除要刪除的任務
+    setTasks(updatedTasks); // 更新狀態，觸發重新渲染
+    console.log("After:", updatedTasks); // 記錄刪除後的任務列表狀態
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks)); // 將更新後的任務列表保存到 localStorage
   };
 
   // ==================== 組件渲染 ====================
